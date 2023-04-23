@@ -56,6 +56,7 @@ interface DataFeedConfigurationDocument extends Document {
   mappingsData: MappingDataDocument[];
   globalRules: ConditionDocument[];
   storeName: string;
+  ftpLogin: { username: string; password: string };
 }
 
 const DataFeedConfigurationSchema = new Schema<DataFeedConfigurationDocument>({
@@ -64,6 +65,17 @@ const DataFeedConfigurationSchema = new Schema<DataFeedConfigurationDocument>({
   mappingsData: { type: [MappingDataSchema], required: true },
   globalRules: { type: [ConditionSchema], required: false },
   storeName: { type: String, required: true },
+  ftpLogin: {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+  },
 });
 
 const DataFeedConfiguration = model<DataFeedConfigurationDocument>(

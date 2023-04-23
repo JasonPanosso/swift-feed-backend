@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import DataFeedConfiguration from './models/DataFeedConfigurationSchema';
+import ftpInit from './services/FtpService';
 
 const port = process.env.PORT || 3000;
 const MONGODB_URI = 'mongodb://localhost:27017/swift-feed';
@@ -39,3 +40,5 @@ DataFeedConfiguration.findById(_id)
   .catch((error) => {
     console.error('Error looking up DataFeedConfiguration:', error);
   });
+
+ftpInit();
