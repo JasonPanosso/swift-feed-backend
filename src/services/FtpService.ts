@@ -8,23 +8,47 @@ const options = {
   tls: undefined,
 };
 
+const allowedCommands = [
+  'PASS',
+  'USER',
+  'QUIT',
+  'PASV',
+  'STOR',
+  'TYPE',
+  'LIST',
+  'PWD',
+  'CWD',
+];
+
 const ftpServer = new ftpd.FtpServer(options.host, {
   getInitialCwd: function (connection) {
-    const userDir = '/ftp-root/' + connection.username;
-    if (fs.existsSync(process.cwd() + userDir)) {
-      return userDir;
+    const userDir = connection.username;
+    const userDirWithFullPath = process.cwd() + '/ftp-root/' + userDir;
+    if (fs.existsSync(userDirWithFullPath)) {
+      return '/' + userDir;
     } else {
-      fs.mkdir(process.cwd() + userDir, (err) => {
+      fs.mkdir(userDirWithFullPath, (err) => {
         if (err) {
           return console.error(err);
         }
       });
-      return userDir;
+      return '/' + userDir;
     }
   },
   getRoot: () => {
-    return process.cwd();
+    const rootDir = process.cwd() + '/ftp-root/'
+    if (fs.existsSync(rootDir)) {
+      return rootDir;
+    } else {
+      fs.mkdir(rootDir, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+      });
+      return rootDir;
+    }
   },
+  allowedCommands: allowedCommands,
   pasvPortRangeStart: 1025,
   pasvPortRangeEnd: 1050,
   tlsOptions: options.tls,
@@ -60,7 +84,7 @@ ftpServer.on('client:connected', function (connection) {
     ) {
       if (pass && username) {
         password = pass;
-        const isAuthenticated = await authenticateFtpUser(username!, password!);
+        const isAuthenticated = await authenticateFtpUser(username, password);
         if (isAuthenticated) {
           success(username);
         } else {
