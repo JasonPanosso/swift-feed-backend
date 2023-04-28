@@ -1,16 +1,20 @@
 import csv from 'csv-parser';
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 type ParsedCsvData = Array<Record<string, string>>;
 
-export default function parseCsvData(stream: ReadStream): ParsedCsvData {
+export const parseCsvData = (stream: Readable): Promise<ParsedCsvData> => {
   const results: ParsedCsvData = [];
-  stream
-    .pipe(csv())
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-      // TODO put logger stuff here :))
-      console.log(results);
-    });
-  return results;
+  return new Promise((resolve, reject) => {
+    stream
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', () => {
+        // TODO put logger stuff here
+        resolve(results);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
 }

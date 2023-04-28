@@ -60,7 +60,9 @@ const applyMappings = (mappingsData: any[], csvData: any[]): any[] => {
         csvData
       );
     }
-    // this is garbage output to get rid of errors XD
+    // this is garbage output to get rid of ts errors XD
     return csvData;
   });
 };
+
+export default applyMappings

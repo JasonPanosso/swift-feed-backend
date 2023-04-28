@@ -1,9 +1,9 @@
 import DataFeedConfiguration from '../models/DataFeedConfigurationSchema';
 
-export async function authenticateFtpUser(
+export const authenticateFtpUser = async (
   username?: string,
   password?: string
-): Promise<boolean> {
+): Promise<boolean> => {
   if (!username || !password) return false;
   try {
     const dataFeedConfiguration = await DataFeedConfiguration.findOne({
@@ -18,4 +18,4 @@ export async function authenticateFtpUser(
     console.error('Error during FTP authentication: ', error);
     return false;
   }
-}
+};
