@@ -34,7 +34,8 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
   allowedCommands: ftpConfig.allowedCommands,
   pasvPortRangeStart: 1025,
   pasvPortRangeEnd: 1050,
-  tlsOptions: ftpConfig.tls,
+  tlsOptions: ftpConfig.tlsOptions,
+  tlsOnly: ftpConfig.tlsOnly,
   allowUnauthorizedTls: true,
   useWriteFile: false,
   useReadFile: true,
@@ -69,12 +70,10 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
         const isAuthenticated = await authenticateFtpUser(username, password);
         if (isAuthenticated) {
           success(username);
-        } else {
-          failure();
+          return;
         }
-      } else {
-        failure();
       }
+      failure();
     }
   );
   connection.on(
@@ -83,7 +82,7 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
       event: string,
       data: { user: string; file: string; bytesWritten: number }
     ) => {
-      const filePath = ftpConfig.ftpDir + data.file
+      const filePath = ftpConfig.ftpDir + data.file;
       if (data.bytesWritten > ftpConfig.sizeLimit) {
         console.error(
           `Error during file upload: File exceeded max file size of ${ftpConfig.sizeLimit}`
@@ -92,17 +91,16 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
         return;
       }
       if (event === 'close') {
+        console.log(`${data.file} successfully uploaded, beginning processing`);
         const fileStream = fs.createReadStream(filePath);
         const feedProcessingMediator = new FeedProcessingMediator();
         await feedProcessingMediator.processDataFeed(fileStream, data.user);
         console.log('Beginning file cleanup');
         fs.rmSync(filePath);
         if (fs.existsSync(filePath)) {
-          console.error(`File cleanup failed for ${filePath}`)
-          return
+          console.error(`File cleanup failed for ${filePath}`);
         } else {
-          console.log(`File cleanup performed successfully for ${filePath}`)
-          return
+          console.log(`File cleanup performed successfully for ${filePath}`);
         }
       }
     }
