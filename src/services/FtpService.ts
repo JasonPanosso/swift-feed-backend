@@ -38,7 +38,6 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
   allowUnauthorizedTls: true,
   useWriteFile: false,
   useReadFile: true,
-  uploadMaxSlurpSize: 7000,
 });
 
 ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
