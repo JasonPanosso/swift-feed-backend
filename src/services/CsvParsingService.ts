@@ -1,7 +1,6 @@
 import csv from 'csv-parser';
 import { Readable } from 'stream';
-
-type ParsedCsvData = Array<Record<string, string>>;
+import { ParsedCsvData } from '../shared/types'
 
 export const parseCsvData = (stream: Readable): Promise<ParsedCsvData> => {
   const results: ParsedCsvData = [];

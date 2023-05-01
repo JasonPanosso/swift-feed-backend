@@ -1,4 +1,4 @@
-import DataFeedConfiguration from '../models/DataFeedConfigurationSchema';
+import { DataFeedConfigurationModel } from '../models/DataFeedConfigurationSchema';
 
 export const authenticateFtpUser = async (
   username?: string,
@@ -6,7 +6,7 @@ export const authenticateFtpUser = async (
 ): Promise<boolean> => {
   if (!username || !password) return false;
   try {
-    const dataFeedConfiguration = await DataFeedConfiguration.findOne({
+    const dataFeedConfiguration = await DataFeedConfigurationModel.findOne({
       ftpLogin: { username, password },
     });
 

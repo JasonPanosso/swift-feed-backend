@@ -94,7 +94,7 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
         console.log(`${data.file} successfully uploaded, beginning processing`);
         const fileStream = fs.createReadStream(filePath);
         const feedProcessingMediator = new FeedProcessingMediator();
-        await feedProcessingMediator.processDataFeed(fileStream, data.user);
+        await feedProcessingMediator.processData(fileStream, data.user);
         console.log('Beginning file cleanup');
         fs.rmSync(filePath);
         if (fs.existsSync(filePath)) {
@@ -107,7 +107,7 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
   );
 });
 
-export const setupFtp = () => {
+export const setupFtp = async (): Promise<void> => {
   ftpServer.listen(ftpConfig.port);
   console.log(`FTP Server listening on ${ftpConfig.host}:${ftpConfig.port}`);
 };

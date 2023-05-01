@@ -1,11 +1,8 @@
 import { Schema, model, Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { Conditional } from '../shared/types';
 
-interface ConditionDocument extends Document {
-  inventoryField: string;
-  operator: string;
-  condition: string;
-}
+interface ConditionDocument extends Document, Conditional {}
 
 const ConditionSchema = new Schema<ConditionDocument>({
   inventoryField: { type: String, required: true },
@@ -35,7 +32,7 @@ const MappingOperationDataSchema = new Schema<MappingOperationDataDocument>({
     required: true,
   },
   operationInput: { type: Object, required: true },
-  conditions: { type: [MappingOperationConditionsSchema], required: false },
+  conditions: { type: [MappingOperationConditionsSchema], required: true },
 });
 
 interface MappingDataDocument extends Document {
@@ -50,37 +47,52 @@ const MappingDataSchema = new Schema<MappingDataDocument>({
   conditionalToggle: { type: Boolean, required: true },
 });
 
-interface DataFeedConfigurationDocument extends Document {
-  _id: string;
+export interface DataFeedConfigurationDocument extends Document {
+  feedId: string;
   userId: Schema.Types.ObjectId;
   mappingsData: MappingDataDocument[];
-  globalRules: ConditionDocument[];
+  globalRules: MappingOperationConditionsDocument[];
   storeName: string;
   ftpLogin: { username: string; password: string };
 }
 
-const DataFeedConfigurationSchema = new Schema<DataFeedConfigurationDocument>({
-  _id: { type: String, default: uuidv4() },
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  mappingsData: { type: [MappingDataSchema], required: true },
-  globalRules: { type: [ConditionSchema], required: false },
-  storeName: { type: String, required: true },
-  ftpLogin: {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
+export const DataFeedConfigurationSchema =
+  new Schema<DataFeedConfigurationDocument>(
+    {
+      _id: { type: String, default: uuidv4() },
+      feedId: { type: String, required: true, unique: true },
+      userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+      mappingsData: { type: [MappingDataSchema], required: true },
+      globalRules: { type: [MappingOperationConditionsSchema], required: true },
+      storeName: { type: String, required: true },
+      ftpLogin: {
+        username: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        password: {
+          type: String,
+          required: true,
+        },
+      },
     },
-    password: {
-      type: String,
-      required: true,
-    },
-  },
-});
+    { validateBeforeSave: true }
+  );
 
-const DataFeedConfiguration = model<DataFeedConfigurationDocument>(
+DataFeedConfigurationSchema.pre<DataFeedConfigurationDocument>(
+  'validate',
+  function () {
+    if (
+      (this.isModified('ftpLogin.username') || this.isModified('feedId')) &&
+      this.feedId !== this.ftpLogin.username
+    ) {
+      throw new Error(`feedId and ftp username must be the same`);
+    }
+  }
+);
+
+export const DataFeedConfigurationModel = model<DataFeedConfigurationDocument>(
   'DataFeedConfiguration',
   DataFeedConfigurationSchema
 );
-
-export default DataFeedConfiguration;

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
-export const setupDb = (): void => {
+export const setupDb = async (): Promise<void> => {
   const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/swift-feed';
-  mongoose
+  await mongoose
     .connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -12,5 +12,6 @@ export const setupDb = (): void => {
     })
     .catch((error) => {
       console.error('Error connecting to MongoDB:', error.message);
+      throw new Error(`Could not connect to database, error: ${error.message}`)
     });
 };
