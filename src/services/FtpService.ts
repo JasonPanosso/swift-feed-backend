@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as ftpd from 'ftpd';
-import { ftpConfig } from '../config/ftp';
+import { ftpConfig } from '../config/ftpConfig';
 import { authenticateFtpUser } from './AuthService';
 import { FeedProcessingMediator } from './FeedProcessingMediator';
 

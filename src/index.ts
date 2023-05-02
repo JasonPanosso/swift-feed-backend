@@ -1,6 +1,6 @@
 import { setupFtp } from './services/FtpService';
-import { setupDb } from './config/mongodb';
-import { setupExpress } from './config/express';
+import { setupDb } from './services/DatabaseService';
+import { setupExpress } from './services/ExpressService';
 import { config } from './config/config';
 
 const main = async () => {

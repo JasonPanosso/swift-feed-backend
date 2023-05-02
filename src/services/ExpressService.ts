@@ -1,10 +1,8 @@
 import express from 'express';
 import { fetchTsvRouter } from '../routes/fetchTsv';
-import { config } from './config';
+import { config } from '../config/config';
 
-export const expressConfig = {
-  expressPort: config.expressPort || 3000,
-};
+const expressPort = config.expressPort || 3000;
 
 export const setupExpress = async (): Promise<void> => {
   const app = express();
@@ -18,7 +16,7 @@ export const setupExpress = async (): Promise<void> => {
 
   app.get('/api/fetchTsv/:feedId', fetchTsvRouter);
 
-  app.listen(expressConfig.expressPort, () => {
-    console.log(`Express running on port ${expressConfig.expressPort}`);
+  app.listen(expressPort, () => {
+    console.log(`Express running on port ${expressPort}`);
   });
 };
