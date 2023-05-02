@@ -1,15 +1,12 @@
 import { Readable } from 'stream';
 import { parseCsvData } from './CsvParsingService';
-import { fetchDataFeedConfigurationFromDb } from './DatabaseService';
 import {
-  applyMappingsToCsvData,
-  evaluateConditions,
-} from './MappingOperationProcessingService';
-import type {
-  ParsedCsvData,
-  MappingOperationConditions,
-  MappingData,
-} from '../shared/types';
+  fetchDataFeedConfigurationFromDb,
+  saveFormattedDataFeedToDb,
+} from './DatabaseService';
+import { FormattedDataFeedDocument, FormattedDataFeedModel } from '../models/FormattedDataFeedSchema';
+import { applyMappingsToCsvData } from './MappingOperationProcessingService';
+import type { MappingData } from '../shared/types';
 
 class FeedProcessingMediator {
   // Main entry point for business logic
@@ -17,27 +14,29 @@ class FeedProcessingMediator {
     try {
       const csvData = await parseCsvData(stream);
       const doc = await fetchDataFeedConfigurationFromDb(feedId);
-      const filteredCsvData = this.filterCsvData(csvData, doc.globalRules);
-      const dataGoogleFeedFormatted = applyMappingsToCsvData(
-        filteredCsvData,
-        doc.mappingsData as MappingData[]
+      const formattedData = applyMappingsToCsvData(
+        csvData,
+        doc.mappingsData as MappingData[],
+        doc.globalRules
       );
-      console.log(dataGoogleFeedFormatted);
+      const savedToDb = await this.saveFormattedData(feedId, formattedData);
+      console.log(savedToDb)
     } catch (error) {
       console.error('Error during data processing:', error);
-      return false
+      return false;
     }
-
-    return true
+    return true;
   }
-
-  filterCsvData(
-    csvData: ParsedCsvData,
-    globalRules: MappingOperationConditions[]
-  ): ParsedCsvData {
-    return csvData.filter((dataRow) => {
-      evaluateConditions(globalRules, dataRow);
-    });
+  async saveFormattedData(
+    feedId: string,
+    data: Array<Record<string, string>>
+  ): Promise<FormattedDataFeedDocument> {
+    const formattedDataFeed: FormattedDataFeedDocument =
+      new FormattedDataFeedModel({
+        feedId: feedId,
+        data: data,
+      });
+    return saveFormattedDataFeedToDb(formattedDataFeed)
   }
 }
 

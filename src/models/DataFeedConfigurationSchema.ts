@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { Conditional } from '../shared/types';
+import short from 'short-uuid';
 
 interface ConditionDocument extends Document, Conditional {}
 
@@ -60,37 +61,13 @@ export const DataFeedConfigurationSchema =
   new Schema<DataFeedConfigurationDocument>(
     {
       _id: { type: String, default: uuidv4() },
-      feedId: { type: String, required: true, unique: true },
+      feedId: { type: String, required: true, unique: true, default: short().generate() },
       userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-      mappingsData: { type: [MappingDataSchema], required: true },
-      globalRules: { type: [MappingOperationConditionsSchema], required: true },
-      storeName: { type: String, required: true },
-      ftpLogin: {
-        username: {
-          type: String,
-          required: true,
-          unique: true,
-        },
-        password: {
-          type: String,
-          required: true,
-        },
-      },
+      mappingsData: { type: [MappingDataSchema], required: false },
+      globalRules: { type: [MappingOperationConditionsSchema], required: false },
+      storeName: { type: String, required: false },
     },
-    { validateBeforeSave: true }
   );
-
-DataFeedConfigurationSchema.pre<DataFeedConfigurationDocument>(
-  'validate',
-  function () {
-    if (
-      (this.isModified('ftpLogin.username') || this.isModified('feedId')) &&
-      this.feedId !== this.ftpLogin.username
-    ) {
-      throw new Error(`feedId and ftp username must be the same`);
-    }
-  }
-);
 
 export const DataFeedConfigurationModel = model<DataFeedConfigurationDocument>(
   'DataFeedConfiguration',

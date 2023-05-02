@@ -169,13 +169,12 @@ const evaluateCondition = (
 export const evaluateConditions = (
   conditionsList: MappingOperationConditions[],
   dataRow: Record<string, string>
-): boolean => {
-  return conditionsList.some((conditions) =>
+): boolean =>
+  conditionsList.some((conditions) =>
     conditions.conditions.every((condition) =>
       evaluateCondition(condition, dataRow)
     )
   );
-};
 
 const applyMappingsToProduct = (
   productData: Record<string, string>,
@@ -203,10 +202,14 @@ const applyMappingsToProduct = (
 
 export const applyMappingsToCsvData = (
   csvData: ParsedCsvData,
-  mappingsData: MappingData[]
+  mappingsData: MappingData[],
+  globalRules: MappingOperationConditions[]
 ): Record<string, string>[] => {
   const output: Record<string, string>[] = [];
-  csvData.forEach((productData) => {
+  const filteredCsvData = csvData.filter((dataRow) =>
+    evaluateConditions(globalRules, dataRow)
+  );
+  filteredCsvData.forEach((productData) => {
     output.push(applyMappingsToProduct(productData, mappingsData));
   });
   return output;

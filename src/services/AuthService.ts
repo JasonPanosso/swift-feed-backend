@@ -2,12 +2,11 @@ import { DataFeedConfigurationModel } from '../models/DataFeedConfigurationSchem
 
 export const authenticateFtpUser = async (
   username?: string,
-  password?: string
 ): Promise<boolean> => {
-  if (!username || !password) return false;
+  if (!username) return false;
   try {
     const dataFeedConfiguration = await DataFeedConfigurationModel.findOne({
-      ftpLogin: { username, password },
+      feedId: username,
     });
 
     if (dataFeedConfiguration) {

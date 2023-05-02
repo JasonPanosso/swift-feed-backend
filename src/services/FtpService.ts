@@ -43,7 +43,6 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
 
 ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
   let username: string | undefined = undefined;
-  let password: string | undefined = undefined;
 
   console.log(`Client connected: ${connection.socket.remoteAddress}`);
   connection.on(
@@ -65,9 +64,8 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
       success: (user: string) => void,
       failure: () => void
     ) => {
-      if (pass && username) {
-        password = pass;
-        const isAuthenticated = await authenticateFtpUser(username, password);
+      if (username) {
+        const isAuthenticated = await authenticateFtpUser(username);
         if (isAuthenticated) {
           success(username);
           return;
