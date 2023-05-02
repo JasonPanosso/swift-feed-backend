@@ -22,6 +22,7 @@
   "homepage": "https://github.com/jasonpanosso/swift-feed-backend#readme",
   "dependencies": {
     "csv-parser": "^3.0.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "ftpd": "^0.2.16",
     "mongoose": "^7.0.4",

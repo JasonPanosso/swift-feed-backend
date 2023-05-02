@@ -1,14 +1,15 @@
 import express from 'express';
 import { fetchTsvRouter } from '../routes/fetchTsv';
+import { config } from './config';
 
 export const expressConfig = {
-  expressPort: process.env.EXPRESS_PORT || 3000,
+  expressPort: config.expressPort || 3000,
 };
 
 export const setupExpress = async (): Promise<void> => {
   const app = express();
 
-  app.use(express.json())
+  app.use(express.json());
 
   // temp test
   app.get('/', (req, res) => {
