@@ -9,7 +9,7 @@ export const config = {
   ftpHost: process.env.FTP_HOST,
   ftpPort: Number(process.env.FTP_PORT),
   ftpTlsOnly: process.env.FTP_TLS_ONLY?.toLowerCase() === 'true',
-  ftpFileSizeLimit: Number(process.env.FTP_FILE_SIZE_LIMIT) || undefined,
+  ftpFileSizeLimit: Number(process.env.FTP_FILE_SIZE_LIMIT),
   ftpDir: process.env.FTP_DIR,
   ftpTlsKey: process.env.FTP_TLS_KEY_FILE_PATH,
   ftpTlsCert: process.env.FTP_TLS_CERT_FILE_PATH,
