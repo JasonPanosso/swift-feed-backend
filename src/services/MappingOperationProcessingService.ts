@@ -11,12 +11,13 @@ interface Operation {
 }
 
 const isInputInventoryField = (input: string): boolean => {
-  return input.startsWith('column');
+  return input.startsWith('column:');
 };
 
 const removeStringPrefix = (str: string): string => str.slice(7);
 
-const staticOperation: Operation = (input, dataRow) => input.data as string;
+const staticOperation: Operation = (input, _dataRow) => input.data as string;
+
 
 const renameOperation: Operation = (input, dataRow) => {
   if (dataRow[input.data as string]) return dataRow[input.data as string];
@@ -25,10 +26,8 @@ const renameOperation: Operation = (input, dataRow) => {
   );
 };
 
-const emptyOperation: Operation = (input, dataRow) => '';
+const emptyOperation: Operation = (_input, _dataRow) => '';
 
-// TODO: this function really exposes how the current types/db schema fails to
-// hold up to SOLID principles. Fix pls ye dumby
 const combineOperation: Operation = (input, dataRow) => {
   if (!input.separator) {
     throw new Error(
