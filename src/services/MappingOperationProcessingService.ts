@@ -1,22 +1,13 @@
 import type {
   ParsedCsvData,
-  Conditional,
   MappingData,
   MappingOperationData,
   OperationInput,
-  MappingOperationConditions,
 } from '../shared/types';
+import { evaluateConditions } from '../utils/conditionalOperations';
 
 interface Operation {
   (input: OperationInput, dataRow: Record<string, string>): string;
-}
-
-interface ConditionalOperation {
-  (
-    inventoryField: string,
-    condition: string,
-    dataRow: Record<string, string>
-  ): boolean;
 }
 
 const isInputInventoryField = (input: string): boolean => {
@@ -46,10 +37,11 @@ const combineOperation: Operation = (input, dataRow) => {
   }
   const strList = input.data as string[];
   const formattedStrList = strList.map((str) => {
-    if (isInputInventoryField(str)) {
-      return dataRow[removeStringPrefix(str)];
+    const strWithoutPrefix = removeStringPrefix(str);
+    if (isInputInventoryField(strWithoutPrefix)) {
+      return dataRow[strWithoutPrefix];
     } else {
-      return removeStringPrefix(str);
+      return strWithoutPrefix;
     }
   });
   return formattedStrList.join(input.separator);
@@ -62,81 +54,6 @@ const operationMap: Record<string, Operation> = {
   combine: combineOperation,
 };
 
-const blankConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return !dataRow[inventoryField];
-};
-
-const notBlankConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return !!dataRow[inventoryField];
-};
-
-const equalsConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return dataRow[inventoryField] == condition;
-};
-
-const notEqualsConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return dataRow[inventoryField] !== condition;
-};
-
-const includesConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return dataRow[inventoryField].includes(condition);
-};
-
-const notIncludesConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return !dataRow[inventoryField].includes(condition);
-};
-
-const greaterConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return dataRow[inventoryField] > condition;
-};
-
-const lesserConditionalOperation: ConditionalOperation = (
-  inventoryField,
-  condition,
-  dataRow
-) => {
-  return dataRow[inventoryField] < condition;
-};
-
-const conditionalOperationMap: Record<string, ConditionalOperation> = {
-  blank: blankConditionalOperation,
-  notBlank: notBlankConditionalOperation,
-  includes: includesConditionalOperation,
-  notIncludes: notIncludesConditionalOperation,
-  equals: equalsConditionalOperation,
-  notEquals: notEqualsConditionalOperation,
-  greater: greaterConditionalOperation,
-  lesser: lesserConditionalOperation,
-};
-
 const createOperation = (operationSelect: string) => {
   if (operationMap[operationSelect]) {
     return operationMap[operationSelect];
@@ -146,35 +63,6 @@ const createOperation = (operationSelect: string) => {
     );
   }
 };
-
-const createConditionalOperation = (conditionalOperationSelect: string) => {
-  if (conditionalOperationMap[conditionalOperationSelect]) {
-    return conditionalOperationMap[conditionalOperationSelect];
-  } else {
-    throw new Error(
-      `Error while creating Conditional Operation - Unknown operation: ${conditionalOperationSelect}`
-    );
-  }
-};
-
-const evaluateCondition = (
-  conditional: Conditional,
-  dataRow: Record<string, string>
-): boolean => {
-  if (!conditional) return true;
-  const operation = createConditionalOperation(conditional.operator);
-  return operation(conditional.inventoryField, conditional.condition, dataRow);
-};
-
-export const evaluateConditions = (
-  conditionsList: MappingOperationConditions[],
-  dataRow: Record<string, string>
-): boolean =>
-  conditionsList.some((conditions) =>
-    conditions.conditions.every((condition) =>
-      evaluateCondition(condition, dataRow)
-    )
-  );
 
 const applyMappingsToProduct = (
   productData: Record<string, string>,
@@ -202,15 +90,10 @@ const applyMappingsToProduct = (
 
 export const applyMappingsToCsvData = (
   csvData: ParsedCsvData,
-  mappingsData: MappingData[],
-  globalRules: MappingOperationConditions[]
+  mappingsData: MappingData[]
 ): Record<string, string>[] => {
-  const output: Record<string, string>[] = [];
-  const filteredCsvData = csvData.filter((dataRow) =>
-    evaluateConditions(globalRules, dataRow)
+  const output = csvData.map((productData) =>
+    applyMappingsToProduct(productData, mappingsData)
   );
-  filteredCsvData.forEach((productData) => {
-    output.push(applyMappingsToProduct(productData, mappingsData));
-  });
   return output;
 };

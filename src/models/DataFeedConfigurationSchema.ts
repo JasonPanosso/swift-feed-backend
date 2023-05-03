@@ -54,7 +54,6 @@ export interface DataFeedConfigurationDocument extends Document {
   mappingsData: MappingDataDocument[];
   globalRules: MappingOperationConditionsDocument[];
   storeName: string;
-  ftpLogin: { username: string; password: string };
 }
 
 export const DataFeedConfigurationSchema =

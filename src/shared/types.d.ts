@@ -1,8 +1,19 @@
 export type ParsedCsvData = Array<Record<string, string>>;
 
+export enum ConditionalOperator {
+  blank = 'blank',
+  notBlank = 'notBlank',
+  includes = 'includes',
+  notIncludes = 'notIncludes',
+  equals = 'equals',
+  notEquals = 'notEquals',
+  greater = 'greater',
+  lesser = 'lesser',
+}
+
 export interface Conditional {
   inventoryField: string;
-  operator: string;
+  operator: ConditionalOperator;
   condition: string;
 }
 
@@ -10,23 +21,9 @@ export interface MappingOperationConditions {
   conditions: Conditional[];
 }
 
-export interface OperationInput {
+interface OperationInput {
   data: string | string[];
   separator?: string;
-}
-
-export interface ConditionalOperationInput {
-  inventoryField: string;
-  operator:
-    | 'blank'
-    | 'notBlank'
-    | 'includes'
-    | 'notIncludes'
-    | 'equals'
-    | 'notEquals'
-    | 'greater'
-    | 'lesser';
-  condition: string;
 }
 
 export interface MappingOperationData {
@@ -45,7 +42,6 @@ export interface DataFeedConfiguration {
   feedId: string;
   userId: string;
   mappingsData: MappingData[];
-  globalRules: Conditional[][];
+  globalRules: MappingOperationConditions[];
   storeName: string;
-  ftpLogin: { username: string; password: string };
 }
