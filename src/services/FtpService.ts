@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as ftpd from 'ftpd';
 import { ftpConfig } from '../config/ftpConfig';
 import { authenticateFtpUser } from './AuthService';
-import { FeedProcessingMediator } from './FeedProcessingMediator';
+import { processDataFeed } from './DataFeedProcessorService';
 
 const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
   getInitialCwd: (connection: ftpd.FtpConnection) => {
@@ -91,8 +91,8 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
       if (event === 'close') {
         console.log(`${data.file} successfully uploaded, beginning processing`);
         const fileStream = fs.createReadStream(filePath);
-        const feedProcessingMediator = new FeedProcessingMediator();
-        await feedProcessingMediator.processData(fileStream, data.user);
+        const result = await processDataFeed(fileStream, data.user);
+        console.log(result)
         console.log('Beginning file cleanup');
         fs.rmSync(filePath);
         if (fs.existsSync(filePath)) {
