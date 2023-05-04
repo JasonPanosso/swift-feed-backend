@@ -61,7 +61,7 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
   connection.on(
     'command:pass',
     async (
-      pass: string,
+      _pass: string,
       success: (user: string) => void,
       failure: () => void
     ) => {
