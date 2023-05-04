@@ -3,6 +3,7 @@ import * as ftpd from 'ftpd';
 import { ftpConfig } from '../config/ftpConfig';
 import { authenticateFtpUser } from './AuthService';
 import { processDataFeed } from './DataFeedProcessorService';
+import type { ExtendedFtpServerOptions } from '../../typings/ftpd';
 
 const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
   getInitialCwd: (connection: ftpd.FtpConnection) => {
@@ -39,7 +40,7 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
   allowUnauthorizedTls: true,
   useWriteFile: false,
   useReadFile: true,
-});
+} as ExtendedFtpServerOptions);
 
 ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
   let username: string | undefined = undefined;
@@ -92,7 +93,7 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
         console.log(`${data.file} successfully uploaded, beginning processing`);
         const fileStream = fs.createReadStream(filePath);
         const result = await processDataFeed(fileStream, data.user);
-        console.log(result)
+        console.log(result);
         console.log('Beginning file cleanup');
         fs.rmSync(filePath);
         if (fs.existsSync(filePath)) {
