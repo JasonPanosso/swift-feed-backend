@@ -24,16 +24,23 @@ export const fetchDataFeedConfigurationFromDb = async (
   }
 };
 
-export const createDataFeedConfigurationToDb = async (
-  feedId: string
+export const createDataFeedConfigurationOnDb = async (
+  feedId: string,
+  userId: mongoose.Schema.Types.ObjectId
 ): Promise<DataFeedConfigurationDocument> => {
   try {
-    const doc = await DataFeedConfigurationModel.create({ feedId: feedId });
+    const doc = await DataFeedConfigurationModel.create({
+      feedId: feedId,
+      userId: userId,
+    });
     if (!doc) {
       throw new Error(
         `DataFeedConfiguration document with id ${feedId} not found`
       );
     }
+    console.log(
+      `New DataFeedConfiguration for userId ${userId} created with feedId: ${feedId}`
+    );
     return doc;
   } catch (error) {
     console.error('Error creating DataFeedConfiguration on database:', error);
@@ -41,7 +48,7 @@ export const createDataFeedConfigurationToDb = async (
   }
 };
 
-export const updateDataFeedConfigurationToDb = async (
+export const updateDataFeedConfigurationOnDb = async (
   feed: any
 ): Promise<DataFeedConfigurationDocument> => {
   try {
