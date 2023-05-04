@@ -1,7 +1,7 @@
 import { DataFeedConfigurationModel } from '../models/DataFeedConfigurationSchema';
 
 export const authenticateFtpUser = async (
-  username?: string,
+  username?: string
 ): Promise<boolean> => {
   if (!username) return false;
   try {
@@ -12,6 +12,7 @@ export const authenticateFtpUser = async (
     if (dataFeedConfiguration) {
       return true;
     }
+    console.log(`FTP auth failed: feed ID "${username}" not found in database`);
     return false;
   } catch (error) {
     console.error('Error during FTP authentication: ', error);
