@@ -13,6 +13,6 @@
     },
     "jsx": "react"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "typings/**/*"],
   "exclude": ["node_modules"]
 }
