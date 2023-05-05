@@ -52,21 +52,26 @@ export interface DataFeedConfigurationDocument extends Document {
   feedId: string;
   userId: Schema.Types.ObjectId;
   mappingsData: MappingDataDocument[];
+  csvHeaders: Record<string, string>;
   globalRules: MappingOperationConditionsDocument[];
   storeName: string;
 }
 
 export const DataFeedConfigurationSchema =
-  new Schema<DataFeedConfigurationDocument>(
-    {
-      _id: { type: String, default: uuidv4() },
-      feedId: { type: String, required: true, unique: true, default: short().generate() },
-      userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-      mappingsData: { type: [MappingDataSchema], required: false },
-      globalRules: { type: [MappingOperationConditionsSchema], required: false },
-      storeName: { type: String, required: false },
+  new Schema<DataFeedConfigurationDocument>({
+    _id: { type: String, default: uuidv4() },
+    feedId: {
+      type: String,
+      required: true,
+      unique: true,
+      default: short().generate(),
     },
-  );
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    mappingsData: { type: [MappingDataSchema], required: false },
+    csvHeaders: { type: Schema.Types.Mixed, required: false },
+    globalRules: { type: [MappingOperationConditionsSchema], required: false },
+    storeName: { type: String, required: false },
+  });
 
 export const DataFeedConfigurationModel = model<DataFeedConfigurationDocument>(
   'DataFeedConfiguration',
