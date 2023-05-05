@@ -1,4 +1,4 @@
-export type ParsedCsvData = Array<Record<string, string>>;
+export type ParsedData = Array<Record<string, string>>;
 
 export enum ConditionalOperator {
   blank = 'blank',

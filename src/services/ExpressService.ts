@@ -1,22 +1,18 @@
 import express from 'express';
-import { fetchTsvRouter } from '../routes/fetchTsv';
+import cors from 'cors';
+import apiRouter from '../routes/api';
 import { config } from '../config/config';
 
-const expressPort = config.expressPort || 3000;
+const EXPRESS_PORT = config.expressPort || 3000;
 
 export const setupExpress = async (): Promise<void> => {
   const app = express();
 
+  app.use(cors());
   app.use(express.json());
+  app.use('/api', apiRouter);
 
-  // temp test
-  app.get('/', (req, res) => {
-    res.send('Hello, world!');
-  });
-
-  app.get('/api/fetchTsv/:feedId', fetchTsvRouter);
-
-  app.listen(expressPort, () => {
-    console.log(`Express running on port ${expressPort}`);
+  app.listen(EXPRESS_PORT, () => {
+    console.log(`Express running on port ${EXPRESS_PORT}`);
   });
 };

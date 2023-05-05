@@ -1,10 +1,10 @@
 import type {
-  ParsedCsvData,
+  ParsedData,
   MappingData,
   MappingOperationData,
   OperationInput,
 } from '../shared/types';
-import { evaluateConditions } from '../utils/conditionalOperations';
+import { evaluateConditions } from '../utils/conditionalOperationsUtil';
 
 interface Operation {
   (input: OperationInput, dataRow: Record<string, string>): string;
@@ -88,7 +88,7 @@ const applyMappingsToProduct = (
 };
 
 export const applyMappingsToCsvData = (
-  csvData: ParsedCsvData,
+  csvData: ParsedData,
   mappingsData: MappingData[]
 ): Record<string, string>[] => {
   const output = csvData.map((productData) =>

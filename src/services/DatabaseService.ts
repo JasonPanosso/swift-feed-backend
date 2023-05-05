@@ -70,7 +70,7 @@ export const updateDataFeedConfigurationOnDb = async (
   }
 };
 
-export const fetchFormattedDataFeedFromDb = async (
+export const getFormattedDataFeedFromDb = async (
   feedId: string
 ): Promise<FormattedDataFeedDocument> => {
   try {

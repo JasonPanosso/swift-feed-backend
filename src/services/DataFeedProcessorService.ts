@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { parseCsvData } from './CsvParsingService';
+import { parseTextData } from '../utils/parseTextDataUtil';
 import {
   fetchDataFeedConfigurationFromDb,
   saveFormattedDataFeedToDb,
@@ -9,10 +9,10 @@ import {
   FormattedDataFeedModel,
 } from '../models/FormattedDataFeedSchema';
 import { applyMappingsToCsvData } from './MappingOperationProcessingService';
-import { evaluateConditions } from '../utils/conditionalOperations';
+import { evaluateConditions } from '../utils/conditionalOperationsUtil';
 import type {
   MappingData,
-  ParsedCsvData,
+  ParsedData,
   MappingOperationConditions,
 } from '../shared/types';
 
@@ -28,21 +28,21 @@ const processDataFeed = async (
   feedId: string
 ): Promise<ProcessResult> => {
   try {
-    const csvData = await parseCsvData(stream);
     const doc = await fetchDataFeedConfigurationFromDb(feedId);
-    const filteredCsvData = filterCsvDataByGlobalRules(
-      csvData,
+    const parsedData = await parseTextData(stream);
+    const filteredData = filterDataByGlobalRules(
+      parsedData,
       doc.globalRules as MappingOperationConditions[]
     );
     const formattedData = applyMappingsToCsvData(
-      filteredCsvData,
+      filteredData,
       doc.mappingsData as MappingData[]
     );
     const savedDocument = await saveFormattedData(feedId, formattedData);
     console.log(savedDocument);
     return { success: true, message: 'Data processing completed successfully' };
   } catch (error) {
-    console.error('Error during data processing:', error);
+    console.error(`Error during data processing for feedId ${feedId}:`, error);
     if (error instanceof Error) {
       return { success: false, message: 'Data processing failed', error };
     } else {
@@ -71,11 +71,11 @@ const saveFormattedData = async (
   }
 };
 
-const filterCsvDataByGlobalRules = (
-  csvData: ParsedCsvData,
+const filterDataByGlobalRules = (
+  data: ParsedData,
   globalRules: MappingOperationConditions[]
-): ParsedCsvData => {
-  return csvData.filter((dataRow) => evaluateConditions(globalRules, dataRow));
+): ParsedData => {
+  return data.filter((dataRow) => evaluateConditions(globalRules, dataRow));
 };
 
 export { processDataFeed };
