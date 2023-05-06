@@ -7,7 +7,7 @@ import {
 import {
   FormattedDataFeedDocument,
   FormattedDataFeedModel,
-} from '../models/FormattedDataFeedSchema';
+} from '../models/FormattedDataFeed';
 import { applyMappingsToCsvData } from './MappingOperationProcessingService';
 import { evaluateConditions } from '../utils/conditionalOperationsUtil';
 import type {

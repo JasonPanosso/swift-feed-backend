@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getFormattedDataFeedFromDb } from '../services/DatabaseService';
-import { FormattedDataFeedDocument } from '../models/FormattedDataFeedSchema';
+import { FormattedDataFeedDocument } from '../models/FormattedDataFeed';
 import { formatDataToTsv } from '../utils/tsvFormatUtil';
 
 const router = express.Router();

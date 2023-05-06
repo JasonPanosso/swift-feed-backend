@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import {
   DataFeedConfigurationDocument,
   DataFeedConfigurationModel,
-} from '../models/DataFeedConfigurationSchema';
+} from '../models/DataFeedConfiguration';
 
 const router = express.Router();
 

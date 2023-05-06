@@ -1,4 +1,4 @@
-import { DataFeedConfigurationModel } from '../models/DataFeedConfigurationSchema';
+import { DataFeedConfigurationModel } from '../models/DataFeedConfiguration';
 
 export const authenticateFtpUser = async (
   username?: string

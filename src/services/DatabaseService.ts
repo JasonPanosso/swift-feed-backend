@@ -2,11 +2,11 @@ import { config } from '../config/config';
 import {
   DataFeedConfigurationModel,
   DataFeedConfigurationDocument,
-} from '../models/DataFeedConfigurationSchema';
+} from '../models/DataFeedConfiguration';
 import {
   FormattedDataFeedDocument,
   FormattedDataFeedModel,
-} from '../models/FormattedDataFeedSchema';
+} from '../models/FormattedDataFeed';
 import mongoose from 'mongoose';
 
 export const fetchDataFeedConfigurationFromDb = async (
