@@ -1,12 +1,10 @@
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { getFormattedDataFeedFromDb } from '../services/DatabaseService';
 import { FormattedDataFeedDocument } from '../models/FormattedDataFeed';
 import { formatDataToTsv } from '../utils/tsvFormatUtil';
 
-const router = express.Router();
 
-// GET a formatted data feed by feedId
-router.get('/:feedId', async (req: Request, res: Response) => {
+export const getFormattedDataFeed = async (req: Request, res: Response) => {
   const { feedId } = req.params;
   try {
     const doc: FormattedDataFeedDocument = await getFormattedDataFeedFromDb(
@@ -23,6 +21,4 @@ router.get('/:feedId', async (req: Request, res: Response) => {
     console.error(`Error fetching TSV for feed with id ${feedId}:`, error);
     res.status(500).send('Internal Server Error');
   }
-});
-
-export default router;
+}

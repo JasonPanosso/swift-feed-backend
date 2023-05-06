@@ -1,13 +1,13 @@
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import {
   DataFeedConfigurationDocument,
   DataFeedConfigurationModel,
 } from '../models/DataFeedConfiguration';
 
-const router = express.Router();
-
-// GET all data feed configurations for a user
-router.get('/user/:userId', async (req: Request, res: Response) => {
+export const getAllDataFeedConfigurations = async (
+  req: Request,
+  res: Response
+) => {
   const userId = req.params.userId;
 
   try {
@@ -24,10 +24,9 @@ router.get('/user/:userId', async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send('Error fetching data feed configurations');
   }
-});
+};
 
-// GET a specific data feed configuration by ID
-router.get('/:id', async (req: Request, res: Response) => {
+export const getDataFeedConfiguration = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
@@ -41,10 +40,12 @@ router.get('/:id', async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send('Error fetching data feed configuration');
   }
-});
+};
 
-// CREATE a new data feed configuration
-router.post('/', async (req: Request, res: Response) => {
+export const createDataFeedConfiguration = async (
+  req: Request,
+  res: Response
+) => {
   const { userId } = req.body;
 
   const newDataFeedConfig: DataFeedConfigurationDocument =
@@ -59,10 +60,12 @@ router.post('/', async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send('Error creating data feed configuration');
   }
-});
+};
 
-// UPDATE a specific data feed configuration by ID
-router.put('/:id', async (req: Request, res: Response) => {
+export const updateDataFeedConfiguration = async (
+  req: Request,
+  res: Response
+) => {
   const id = req.params.id;
   const { mappingsData, globalRules, storeName, csvHeaders } = req.body;
 
@@ -83,10 +86,12 @@ router.put('/:id', async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send('Error updating data feed configuration');
   }
-});
+};
 
-// DELETE a specific data feed configuration by ID
-router.delete('/:id', async (req: Request, res: Response) => {
+export const deleteDataFeedConfiguration = async (
+  req: Request,
+  res: Response
+) => {
   const id = req.params.id;
 
   try {
@@ -102,6 +107,4 @@ router.delete('/:id', async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send('Error deleting data feed configuration');
   }
-});
-
-export default router;
+};
