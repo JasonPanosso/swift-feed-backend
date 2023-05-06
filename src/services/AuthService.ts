@@ -39,7 +39,7 @@ export const userRegister = async (
 
   await user.save();
 
-  const payload = { userId: user.id };
+  const payload = { user: { id: user._id, role: user.role } };
   const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
 
   return token;
@@ -61,7 +61,7 @@ export const userLogin = async (
     throw new Error('Invalid email or password');
   }
 
-  const payload = { userId: user.id };
+  const payload = { user: { id: user._id, role: user.role } };
   const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
 
   return token;

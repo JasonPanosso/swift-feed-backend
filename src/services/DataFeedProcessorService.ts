@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
 import { parseTextData } from '../utils/parseTextDataUtil';
 import {
-  fetchDataFeedConfigurationFromDb,
-  saveFormattedDataFeedToDb,
+  getDataFeedConfigurationByFeedId,
+  saveFormattedDataFeed,
 } from './DatabaseService';
 import {
   FormattedDataFeedDocument,
@@ -28,7 +28,7 @@ const processDataFeed = async (
   feedId: string
 ): Promise<ProcessResult> => {
   try {
-    const doc = await fetchDataFeedConfigurationFromDb(feedId);
+    const doc = await getDataFeedConfigurationByFeedId(feedId);
     const parsedData = await parseTextData(stream);
     const filteredData = filterDataByGlobalRules(
       parsedData,
@@ -63,7 +63,7 @@ const saveFormattedData = async (
     data: data,
   });
   try {
-    const savedDocument = await saveFormattedDataFeedToDb(formattedDataFeed);
+    const savedDocument = await saveFormattedDataFeed(formattedDataFeed);
     return savedDocument;
   } catch (error) {
     console.error(`Error saving formatted data for feed: ${feedId}`, error);

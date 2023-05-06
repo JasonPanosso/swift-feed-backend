@@ -1,5 +1,4 @@
 import { Schema, model, Document } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
 import { Conditional } from '../shared/types';
 import short from 'short-uuid';
 
@@ -59,12 +58,11 @@ export interface DataFeedConfigurationDocument extends Document {
 
 export const DataFeedConfigurationSchema =
   new Schema<DataFeedConfigurationDocument>({
-    _id: { type: String, default: uuidv4() },
     feedId: {
       type: String,
       required: true,
       unique: true,
-      default: short().generate(),
+      default: () => short().generate(),
     },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     mappingsData: { type: [MappingDataSchema], required: false },

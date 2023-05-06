@@ -1,15 +1,11 @@
 import { Request, Response } from 'express';
-import { getFormattedDataFeedFromDb } from '../services/DatabaseService';
-import { FormattedDataFeedDocument } from '../models/FormattedDataFeed';
+import { getFormattedDataFeed as getFormattedDataFeedFromDb } from '../services/DatabaseService';
 import { formatDataToTsv } from '../utils/tsvFormatUtil';
-
 
 export const getFormattedDataFeed = async (req: Request, res: Response) => {
   const { feedId } = req.params;
   try {
-    const doc: FormattedDataFeedDocument = await getFormattedDataFeedFromDb(
-      feedId
-    );
+    const doc = await getFormattedDataFeedFromDb(feedId);
     if (!doc) {
       res.status(404).send('Formatted data feed not found');
     }
@@ -21,4 +17,4 @@ export const getFormattedDataFeed = async (req: Request, res: Response) => {
     console.error(`Error fetching TSV for feed with id ${feedId}:`, error);
     res.status(500).send('Internal Server Error');
   }
-}
+};

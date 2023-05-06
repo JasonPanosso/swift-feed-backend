@@ -1,17 +1,28 @@
 import { Request, Response } from 'express';
+import { RequestWithUser } from '../shared/types';
 import {
-  DataFeedConfigurationDocument,
   DataFeedConfigurationModel,
+  DataFeedConfigurationDocument,
 } from '../models/DataFeedConfiguration';
+import {
+  getDataFeedConfigurationForUser,
+  getDataFeedConfigurationByFeedId,
+  createDataFeedConfigurationForUser,
+  updateDataFeedConfiguration,
+} from '../services/DatabaseService';
 
-export const getAllDataFeedConfigurations = async (
-  req: Request,
+export const getAllDataFeedConfigurationsForUser = async (
+  req: RequestWithUser,
   res: Response
 ) => {
-  const userId = req.params.userId;
-
+  console.log('getAllDataFeedConfigurations');
+  if (!req.user) {
+    res.status(500).send('Error getting data feed configurations for user');
+    return;
+  }
   try {
-    const dataFeedConfigs = await DataFeedConfigurationModel.find({ userId });
+    const userId = req.user.id;
+    const dataFeedConfigs = await getDataFeedConfigurationForUser(userId);
     const formattedDataFeedConfigs = dataFeedConfigs.map((config) => {
       return {
         _id: config._id,
@@ -27,10 +38,10 @@ export const getAllDataFeedConfigurations = async (
 };
 
 export const getDataFeedConfiguration = async (req: Request, res: Response) => {
-  const id = req.params.id;
-
   try {
-    const dataFeedConfig = await DataFeedConfigurationModel.findById(id);
+    const dataFeedConfig = await getDataFeedConfigurationByFeedId(
+      req.params.feedId
+    );
     if (dataFeedConfig) {
       res.status(200).json(dataFeedConfig);
     } else {
@@ -43,40 +54,29 @@ export const getDataFeedConfiguration = async (req: Request, res: Response) => {
 };
 
 export const createDataFeedConfiguration = async (
-  req: Request,
+  req: RequestWithUser,
   res: Response
 ) => {
-  const { userId } = req.body;
-
-  const newDataFeedConfig: DataFeedConfigurationDocument =
-    new DataFeedConfigurationModel({
-      userId,
-    });
-
-  try {
-    const savedDataFeedConfig = await newDataFeedConfig.save();
-    res.status(201).json(savedDataFeedConfig);
-  } catch (error) {
-    console.error(error);
+  if (!req.user) {
+    res.status(500).send('Error creating data feed configuration');
+    return;
+  }
+  const doc = await createDataFeedConfigurationForUser(req.user.id);
+  if (doc) {
+    res.status(201).json(doc);
+  } else {
     res.status(500).send('Error creating data feed configuration');
   }
 };
 
-export const updateDataFeedConfiguration = async (
-  req: Request,
-  res: Response
-) => {
-  const id = req.params.id;
-  const { mappingsData, globalRules, storeName, csvHeaders } = req.body;
-
+export const putDataFeedConfiguration = async (req: Request, res: Response) => {
   try {
-    const updatedDataFeedConfig =
-      await DataFeedConfigurationModel.findByIdAndUpdate(
-        id,
-        { mappingsData, globalRules, storeName, csvHeaders },
-        { new: true }
-      );
-
+    const feedId = req.params.feedId;
+    const { mappingsData, globalRules, storeName, csvHeaders } = req.body;
+    const feed = { feedId, mappingsData, globalRules, storeName, csvHeaders };
+    const updatedDataFeedConfig = await updateDataFeedConfiguration(
+      feed as DataFeedConfigurationDocument
+    );
     if (updatedDataFeedConfig) {
       res.status(200).json(updatedDataFeedConfig);
     } else {
@@ -92,16 +92,14 @@ export const deleteDataFeedConfiguration = async (
   req: Request,
   res: Response
 ) => {
-  const id = req.params.id;
-
   try {
     const deletedDataFeedConfig =
-      await DataFeedConfigurationModel.findByIdAndDelete(id);
+      await DataFeedConfigurationModel.findByIdAndDelete(req.params.feedId);
 
     if (deletedDataFeedConfig) {
       res.status(200).json(deletedDataFeedConfig);
     } else {
-      res.status(404).send('Data feed configuration not found');
+      res.status(404).send(`Data feed configuration not found for id ${req.params.feedId}`);
     }
   } catch (error) {
     console.error(error);

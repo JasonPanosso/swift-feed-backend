@@ -1,3 +1,12 @@
+import { Request } from 'express';
+
+export interface RequestWithUser extends Request {
+  user?: {
+    id: string;
+    role: string;
+  };
+}
+
 export type ParsedData = Array<Record<string, string>>;
 
 export enum ConditionalOperator {

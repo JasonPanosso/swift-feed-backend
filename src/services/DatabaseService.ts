@@ -9,7 +9,22 @@ import {
 } from '../models/FormattedDataFeed';
 import mongoose from 'mongoose';
 
-export const fetchDataFeedConfigurationFromDb = async (
+export const getDataFeedConfigurationForUser = async (
+  userId: string
+): Promise<Array<DataFeedConfigurationDocument>> => {
+  try {
+    const doc = await DataFeedConfigurationModel.find({ userId });
+    if (!doc) {
+      throw new Error(`Unable to find any configurations for user ${userId}`);
+    }
+    return doc;
+  } catch (error) {
+    console.error('Error fetching DataFeedConfiguration from database:', error);
+    throw error;
+  }
+};
+
+export const getDataFeedConfigurationByFeedId = async (
   feedId: string
 ): Promise<DataFeedConfigurationDocument> => {
   try {
@@ -24,22 +39,20 @@ export const fetchDataFeedConfigurationFromDb = async (
   }
 };
 
-export const createDataFeedConfigurationOnDb = async (
-  feedId: string,
-  userId: mongoose.Schema.Types.ObjectId
+export const createDataFeedConfigurationForUser = async (
+  userId: string
 ): Promise<DataFeedConfigurationDocument> => {
   try {
     const doc = await DataFeedConfigurationModel.create({
-      feedId: feedId,
       userId: userId,
     });
     if (!doc) {
       throw new Error(
-        `DataFeedConfiguration document with id ${feedId} not found`
+        `Unable to create new DataFeedConfiguration for userId ${userId}`
       );
     }
     console.log(
-      `New DataFeedConfiguration for userId ${userId} created with feedId: ${feedId}`
+      `New DataFeedConfiguration for userId ${userId} created with feedId: ${doc.feedId}`
     );
     return doc;
   } catch (error) {
@@ -48,8 +61,8 @@ export const createDataFeedConfigurationOnDb = async (
   }
 };
 
-export const updateDataFeedConfigurationOnDb = async (
-  feed: any
+export const updateDataFeedConfiguration = async (
+  feed: DataFeedConfigurationDocument
 ): Promise<DataFeedConfigurationDocument> => {
   try {
     const updatedDoc = await DataFeedConfigurationModel.findOneAndUpdate(
@@ -70,7 +83,25 @@ export const updateDataFeedConfigurationOnDb = async (
   }
 };
 
-export const getFormattedDataFeedFromDb = async (
+export const deleteDataFeedConfiguration = async (
+  feedId: string
+): Promise<DataFeedConfigurationDocument> => {
+  try {
+    const doc = await DataFeedConfigurationModel.findByIdAndDelete({ feedId });
+    if (doc) {
+      return doc;
+    } else {
+      throw new Error(
+        `Failed to delete document - No DataFeedConfiguration with feedId: ${feedId}`
+      );
+    }
+  } catch (error) {
+    console.error('Error deleting DataFeedConfiguration from database:', error);
+    throw error;
+  }
+};
+
+export const getFormattedDataFeed = async (
   feedId: string
 ): Promise<FormattedDataFeedDocument> => {
   try {
@@ -85,7 +116,7 @@ export const getFormattedDataFeedFromDb = async (
   }
 };
 
-export const saveFormattedDataFeedToDb = async (
+export const saveFormattedDataFeed = async (
   feed: FormattedDataFeedDocument
 ): Promise<FormattedDataFeedDocument> => {
   try {

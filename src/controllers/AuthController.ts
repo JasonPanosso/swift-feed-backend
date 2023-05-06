@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { RequestWithUser } from '../shared/types';
 import { validationResult } from 'express-validator';
 import { userLogin, userRegister } from '../services/AuthService';
 
@@ -41,3 +42,11 @@ export async function login(req: Request, res: Response) {
     }
   }
 }
+
+export const checkLoggedIn = (req: RequestWithUser, res: Response) => {
+  if (req.user) {
+    res.status(200).send({ loggedIn: true });
+  } else {
+    res.status(401).send({ loggedIn: false });
+  }
+};

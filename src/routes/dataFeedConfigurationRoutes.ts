@@ -1,18 +1,18 @@
 import express from 'express';
 import {
-  getAllDataFeedConfigurations,
+  getAllDataFeedConfigurationsForUser,
   getDataFeedConfiguration,
   createDataFeedConfiguration,
-  updateDataFeedConfiguration,
+  putDataFeedConfiguration,
   deleteDataFeedConfiguration,
 } from '../controllers/DataFeedConfigurationController';
 
 const router = express.Router();
 
-router.get('/user/:userId', getAllDataFeedConfigurations);
-router.get('/:id', getDataFeedConfiguration);
-router.post('/', createDataFeedConfiguration);
-router.put('/:id', updateDataFeedConfiguration);
-router.delete('/:id', deleteDataFeedConfiguration);
+router.get('/user', getAllDataFeedConfigurationsForUser);
+router.get('/:feedId', getDataFeedConfiguration);
+router.post('/create', createDataFeedConfiguration);
+router.put('/:feedId', putDataFeedConfiguration);
+router.delete('/:feedId', deleteDataFeedConfiguration);
 
 export default router;
