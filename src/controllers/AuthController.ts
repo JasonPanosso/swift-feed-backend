@@ -45,7 +45,7 @@ export async function login(req: Request, res: Response) {
 
 export const checkLoggedIn = (req: RequestWithUser, res: Response) => {
   if (req.user) {
-    res.status(200).send({ loggedIn: true });
+    res.status(200).send({ loggedIn: true, user: req.user });
   } else {
     res.status(401).send({ loggedIn: false });
   }
