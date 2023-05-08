@@ -12,7 +12,7 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
     if (fs.existsSync(fullUserDirPath)) {
       return userDir;
     } else {
-      fs.mkdir(fullUserDirPath, (err) => {
+      fs.mkdir(fullUserDirPath, { recursive: true }, (err) => {
         if (err) {
           console.error('Error getting initial cwd during FTP connection', err);
           return
@@ -25,7 +25,7 @@ const ftpServer = new ftpd.FtpServer(ftpConfig.host, {
     if (fs.existsSync(ftpConfig.ftpDir)) {
       return ftpConfig.ftpDir;
     } else {
-      fs.mkdir(ftpConfig.ftpDir, (err) => {
+      fs.mkdir(ftpConfig.ftpDir, { recursive: true }, (err) => {
         if (err) {
           console.error('Error getting root dir during FTP connection', err);
           return
