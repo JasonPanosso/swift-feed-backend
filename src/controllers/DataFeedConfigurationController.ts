@@ -99,7 +99,9 @@ export const deleteDataFeedConfiguration = async (
     if (deletedDataFeedConfig) {
       res.status(200).json(deletedDataFeedConfig);
     } else {
-      res.status(404).send(`Data feed configuration not found for id ${req.params.feedId}`);
+      res
+        .status(404)
+        .send(`Data feed configuration not found for id ${req.params.feedId}`);
     }
   } catch (error) {
     console.error(error);

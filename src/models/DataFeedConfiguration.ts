@@ -10,6 +10,12 @@ const ConditionSchema = new Schema<ConditionDocument>({
   condition: { type: String, required: false },
 });
 
+ConditionSchema.virtual('id').get(function (this: Document) {
+  return this._id;
+});
+
+ConditionSchema.set('toJSON', { virtuals: true });
+
 interface MappingOperationConditionsDocument extends Document {
   conditions: ConditionDocument[];
 }
@@ -18,6 +24,12 @@ const MappingOperationConditionsSchema =
   new Schema<MappingOperationConditionsDocument>({
     conditions: { type: [ConditionSchema], required: false },
   });
+
+MappingOperationConditionsSchema.virtual('id').get(function (this: Document) {
+  return this._id;
+});
+
+MappingOperationConditionsSchema.set('toJSON', { virtuals: true });
 
 interface MappingOperationDataDocument extends Document {
   operationSelect: 'static' | 'rename' | 'empty' | 'combine';
@@ -35,6 +47,12 @@ const MappingOperationDataSchema = new Schema<MappingOperationDataDocument>({
   conditions: { type: [MappingOperationConditionsSchema], required: true },
 });
 
+MappingOperationDataSchema.virtual('id').get(function (this: Document) {
+  return this._id;
+});
+
+MappingOperationDataSchema.set('toJSON', { virtuals: true });
+
 interface MappingDataDocument extends Document {
   googleFeedField: string;
   mappingOperations: MappingOperationDataDocument[];
@@ -46,6 +64,12 @@ const MappingDataSchema = new Schema<MappingDataDocument>({
   mappingOperations: { type: [MappingOperationDataSchema], required: true },
   conditionalToggle: { type: Boolean, required: true },
 });
+
+MappingDataSchema.virtual('id').get(function (this: Document) {
+  return this._id;
+});
+
+MappingDataSchema.set('toJSON', { virtuals: true });
 
 export interface DataFeedConfigurationDocument extends Document {
   feedId: string;
