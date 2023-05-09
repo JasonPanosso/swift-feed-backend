@@ -10,8 +10,8 @@ interface Operation {
   (input: OperationInput, dataRow: Record<string, string>): string;
 }
 
-const isInputInventoryField = (input: string): boolean => {
-  return input.startsWith('column:');
+const isInputCsvColumn = (input: string): boolean => {
+  return input.startsWith('column');
 };
 
 const removeStringPrefix = (str: string): string => str.slice(7);
@@ -36,7 +36,7 @@ const combineOperation: Operation = (input, dataRow) => {
   const strList = input.data;
   const formattedStrList = strList.map((str) => {
     const strWithoutPrefix = removeStringPrefix(str);
-    if (isInputInventoryField(strWithoutPrefix)) {
+    if (isInputCsvColumn(str)) {
       return dataRow[strWithoutPrefix];
     } else {
       return strWithoutPrefix;
