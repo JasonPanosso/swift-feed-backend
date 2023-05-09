@@ -18,7 +18,6 @@ const removeStringPrefix = (str: string): string => str.slice(7);
 
 const staticOperation: Operation = (input, _dataRow) => input.data as string;
 
-
 const renameOperation: Operation = (input, dataRow) => {
   if (dataRow[input.data as string]) return dataRow[input.data as string];
   throw new Error(
@@ -29,12 +28,12 @@ const renameOperation: Operation = (input, dataRow) => {
 const emptyOperation: Operation = (_input, _dataRow) => '';
 
 const combineOperation: Operation = (input, dataRow) => {
-  if (!input.separator) {
+  if (!Array.isArray(input.data)) {
     throw new Error(
-      `Error: Input provided to combineOperation missing required separator field. Input: ${input}`
+      `Error: Input provided to combineOperation is not a string array. Input: ${input}`
     );
   }
-  const strList = input.data as string[];
+  const strList = input.data;
   const formattedStrList = strList.map((str) => {
     const strWithoutPrefix = removeStringPrefix(str);
     if (isInputInventoryField(strWithoutPrefix)) {
@@ -43,7 +42,7 @@ const combineOperation: Operation = (input, dataRow) => {
       return strWithoutPrefix;
     }
   });
-  return formattedStrList.join(input.separator);
+  return formattedStrList.join(input.separator || '');
 };
 
 const operationMap: Record<string, Operation> = {
