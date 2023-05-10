@@ -10,10 +10,12 @@ import {
 } from '../models/FormattedDataFeed';
 import { applyMappingsToCsvData } from './MappingOperationProcessingService';
 import { evaluateConditions } from '../utils/conditionalOperationsUtil';
+import { matchRegexAndReplace } from '../utils/regexUtil';
 import type {
   MappingData,
   ParsedData,
   MappingOperationConditions,
+  RegexData,
 } from '../shared/types';
 
 interface ProcessResult {
@@ -34,11 +36,18 @@ const processDataFeed = async (
       parsedData,
       doc.globalRules as MappingOperationConditions[]
     );
-    const formattedData = applyMappingsToCsvData(
+    const mappedData = applyMappingsToCsvData(
       filteredData,
       doc.mappingsData as MappingData[]
     );
-    const savedDocument = await saveFormattedData(feedId, formattedData);
+    const mappedDataRegexApplied = applyRegexToProductData(
+      mappedData,
+      doc.regexData
+    );
+    const savedDocument = await saveFormattedData(
+      feedId,
+      mappedDataRegexApplied
+    );
     console.log(savedDocument);
     return { success: true, message: 'Data processing completed successfully' };
   } catch (error) {
@@ -76,6 +85,31 @@ const filterDataByGlobalRules = (
   globalRules: MappingOperationConditions[]
 ): ParsedData => {
   return data.filter((dataRow) => evaluateConditions(globalRules, dataRow));
+};
+
+const applyRegexToProductData = (
+  data: Record<string, string>[],
+  regexDataList: RegexData[]
+): Record<string, string>[] => {
+  return data.map((productData) => {
+    regexDataList.forEach((regexData) => {
+      const key = regexData.googleFeedField
+      if (productData[key]) {
+        const text = productData[key];
+        productData[key] = matchRegexAndReplace(
+          text,
+          regexData.regexString,
+          regexData.replaceString
+        );
+      } else {
+        console.error(
+          `Error applying regex filters, key ${regexData.googleFeedField} 
+          does not exist for product ${productData}`
+        );
+      }
+    });
+    return productData;
+  });
 };
 
 export { processDataFeed };

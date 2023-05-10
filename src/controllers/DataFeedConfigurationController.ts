@@ -72,8 +72,17 @@ export const createDataFeedConfiguration = async (
 export const putDataFeedConfiguration = async (req: Request, res: Response) => {
   try {
     const feedId = req.params.feedId;
-    const { mappingsData, globalRules, storeName, csvHeaders } = req.body;
-    const feed = { feedId, mappingsData, globalRules, storeName, csvHeaders };
+    const { mappingsData, globalRules, storeName, csvHeaders, regexData } =
+      req.body;
+    const feed = {
+      feedId,
+      mappingsData,
+      globalRules,
+      storeName,
+      csvHeaders,
+      regexData,
+    };
+    console.log('Updating Data feed configuration:', feed)
     const updatedDataFeedConfig = await updateDataFeedConfiguration(
       feed as DataFeedConfigurationDocument
     );

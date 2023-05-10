@@ -7,6 +7,12 @@ export interface RequestWithUser extends Request {
   };
 }
 
+export interface RegexData {
+  googleFeedField: string;
+  regexString: string;
+  replaceString: string;
+}
+
 export type ParsedData = Array<Record<string, string>>;
 
 export enum ConditionalOperator {

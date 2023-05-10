@@ -1,8 +1,22 @@
 import { Schema, model, Document } from 'mongoose';
-import { Conditional } from '../shared/types';
+import { Conditional, RegexData } from '../shared/types';
 import short from 'short-uuid';
 
 interface ConditionDocument extends Document, Conditional {}
+
+interface RegexDataDocument extends Document, RegexData {}
+
+const RegexDataSchema = new Schema<RegexDataDocument>({
+  googleFeedField: { type: String, required: true },
+  regexString: { type: String, required: true },
+  replaceString: { type: String, required: true },
+})
+
+RegexDataSchema.virtual('id').get(function (this: Document) {
+  return this._id;
+});
+
+RegexDataSchema.set('toJSON', { virtuals: true });
 
 const ConditionSchema = new Schema<ConditionDocument>({
   inventoryField: { type: String, required: true },
@@ -75,9 +89,10 @@ export interface DataFeedConfigurationDocument extends Document {
   feedId: string;
   userId: Schema.Types.ObjectId;
   mappingsData: MappingDataDocument[];
-  csvHeaders: Record<string, string>;
+  csvHeaders: string[];
   globalRules: MappingOperationConditionsDocument[];
   storeName: string;
+  regexData: RegexData[];
 }
 
 export const DataFeedConfigurationSchema =
@@ -90,7 +105,8 @@ export const DataFeedConfigurationSchema =
     },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     mappingsData: { type: [MappingDataSchema], required: false },
-    csvHeaders: { type: Schema.Types.Mixed, required: false },
+    csvHeaders: { type: [String], required: false },
+    regexData: { type: [RegexDataSchema], required: false },
     globalRules: { type: [MappingOperationConditionsSchema], required: false },
     storeName: { type: String, required: false },
   });
