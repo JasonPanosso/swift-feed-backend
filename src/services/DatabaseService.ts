@@ -1,4 +1,4 @@
-import { config } from '../config/config';
+import { config, s3Config } from '../config/config';
 import {
   DataFeedConfigurationModel,
   DataFeedConfigurationDocument,
@@ -7,6 +7,9 @@ import {
   FormattedDataFeedDocument,
   FormattedDataFeedModel,
 } from '../models/FormattedDataFeed';
+import { createBackup } from './BackupService';
+import { verifyObjectKeysAreDefined } from '../utils/verifyObjectKeysUtil';
+import * as cron from 'node-cron';
 import mongoose from 'mongoose';
 
 export const getDataFeedConfigurationForUser = async (
@@ -161,4 +164,17 @@ export const setupDb = async (): Promise<void> => {
       console.error('Error connecting to MongoDB:', error.message);
       throw new Error(`Could not connect to database, error: ${error.message}`);
     });
+
+  if (config.mongoBackupEnabled) {
+    const backupOptions = {
+      path: config.mongoBackupPath || `${process.cwd()}/backups`,
+      s3: config.s3BackupEnabled ? s3Config : undefined,
+    };
+    if (backupOptions.s3 && !backupOptions.s3.key)
+      backupOptions.s3.key = String(Date.now());
+    cron.schedule(config.mongoBackupFrequency || '0 0 * * *', () => {
+      createBackup(backupOptions);
+    });
+    createBackup(backupOptions);
+  }
 };

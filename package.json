@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/jasonpanosso/swift-feed-backend#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.331.0",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -29,6 +30,7 @@
     "ftpd": "^0.2.16",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.4",
+    "node-cron": "^3.0.2",
     "papaparse": "^5.4.1",
     "short-uuid": "^4.2.2",
     "uuid": "^9.0.0"
@@ -40,6 +42,7 @@
     "@types/ftpd": "^0.2.35",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^18.15.13",
+    "@types/node-cron": "^3.0.7",
     "@types/papaparse": "^5.3.7",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
