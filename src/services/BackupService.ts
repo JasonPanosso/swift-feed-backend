@@ -30,6 +30,7 @@ export async function createBackup(options: BackupOptions): Promise<void> {
       }
     );
   }).catch((err) => console.error(err));
+
   // Upload the backup to S3 if specified in the options
   if (options.s3 && verifyObjectKeysAreDefined(options.s3)) {
     try {

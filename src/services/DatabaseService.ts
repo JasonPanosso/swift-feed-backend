@@ -150,6 +150,19 @@ export const saveFormattedDataFeed = async (
   }
 };
 
+const setupBackup = async () => {
+  const backupOptions = {
+    path: config.mongoBackupPath || `${process.cwd()}/backups`,
+    s3: config.s3BackupEnabled ? s3Config : undefined,
+  };
+  if (backupOptions.s3 && !backupOptions.s3.key)
+    backupOptions.s3.key = String(Date.now());
+  cron.schedule(config.mongoBackupFrequency || '0 0 * * *', () => {
+    createBackup(backupOptions);
+  });
+  await createBackup(backupOptions);
+};
+
 export const setupDb = async (): Promise<void> => {
   const uri = config.mongoUri || 'mongodb://localhost:27017/swift-feed';
   await mongoose
@@ -164,17 +177,5 @@ export const setupDb = async (): Promise<void> => {
       console.error('Error connecting to MongoDB:', error.message);
       throw new Error(`Could not connect to database, error: ${error.message}`);
     });
-
-  if (config.mongoBackupEnabled) {
-    const backupOptions = {
-      path: config.mongoBackupPath || `${process.cwd()}/backups`,
-      s3: config.s3BackupEnabled ? s3Config : undefined,
-    };
-    if (backupOptions.s3 && !backupOptions.s3.key)
-      backupOptions.s3.key = String(Date.now());
-    cron.schedule(config.mongoBackupFrequency || '0 0 * * *', () => {
-      createBackup(backupOptions);
-    });
-    createBackup(backupOptions);
-  }
+  if (config.mongoBackupEnabled) await setupBackup();
 };

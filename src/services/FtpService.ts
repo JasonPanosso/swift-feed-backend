@@ -67,6 +67,10 @@ ftpServer.on('client:connected', (connection: ftpd.FtpConnection) => {
       success: (user: string) => void,
       failure: () => void
     ) => {
+      // Pre-apologies to any reader: This is likely a bad choice. Take note
+      // that there is NO password authentication. All IMS providers I currently
+      // work with do not support sftp or ftps, auth is done in plaintext
+      // anyway.
       if (username) {
         const isAuthenticated = await authenticateFtpUser(username);
         if (isAuthenticated) {

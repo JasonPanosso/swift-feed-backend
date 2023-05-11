@@ -8,6 +8,10 @@ const jwtSecret = process.env.JWT_SECRET || 'jwt_secret';
 export const authenticateFtpUser = async (
   username?: string
 ): Promise<boolean> => {
+  // Currently there is no password auth for the local ftp server. This is a
+  // custom solution considering that all IMS services that I use this app for
+  // do not support sftp/ftps, so idt there's much point in having a password
+  // that is going to be plaintext anyway(also sinning is fun)
   if (!username) return false;
   try {
     const dataFeedConfiguration = await DataFeedConfigurationModel.findOne({
@@ -62,7 +66,7 @@ export const userLogin = async (
   }
 
   const payload = { user: { id: user._id, role: user.role } };
-  const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
+  const token = jwt.sign(payload, jwtSecret, { expiresIn: '2h' });
 
   return token;
 };
