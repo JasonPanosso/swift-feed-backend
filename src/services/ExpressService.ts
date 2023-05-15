@@ -10,7 +10,8 @@ export const setupExpress = async (): Promise<void> => {
 
   app.use(
     cors({
-      origin: 'http://localhost',
+      // TODO change this and change cors per route? zz
+      origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true, 

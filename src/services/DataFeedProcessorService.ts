@@ -87,6 +87,7 @@ const filterDataByGlobalRules = (
   return data.filter((dataRow) => evaluateConditions(globalRules, dataRow));
 };
 
+// TODO rethink if this logic should be here, or abstracted away.
 const applyRegexToProductData = (
   data: Record<string, string>[],
   regexDataList: RegexData[]

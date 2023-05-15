@@ -15,7 +15,6 @@ export const getAllDataFeedConfigurationsForUser = async (
   req: RequestWithUser,
   res: Response
 ) => {
-  console.log('getAllDataFeedConfigurations');
   if (!req.user) {
     res.status(500).send('Error getting data feed configurations for user');
     return;
