@@ -8,6 +8,9 @@ export const config = {
   mongoBackupEnabled:
     process.env.MONGO_BACKUP_ENABLED?.toLowerCase() === 'true',
   s3BackupEnabled: process.env.S3_BACKUP_ENABLED?.toLowerCase() === 'true',
+  httpsEnabled: process.env.HTTPS_ENABLED?.toLowerCase() === 'true',
+  sslCert: process.env.SSL_CERT_PATH,
+  sslPrivateKey: process.env.SSL_PRIVATE_KEY_PATH,
   mongoBackupPath: process.env.MONGO_BACKUP_PATH,
   mongoBackupFrequency: process.env.MONGO_BACKUP_FREQUENCY,
   ftpEnabled: process.env.ENABLE_FTP_SERVER?.toLowerCase() === 'true',
